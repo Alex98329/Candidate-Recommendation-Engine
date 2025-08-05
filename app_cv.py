@@ -53,7 +53,7 @@ def generate_summary(job, resume):
                 {"role": "system", "content": "You are a technical recruiter."},
                 {"role": "user", "content": f"Job: {job}\nResume: {resume}\nWhy is this person a good fit?"}
             ],
-            "max_tokens": 200
+            max_tokens: 200
         )
         return response['choices'][0]['message']['content']
     except Exception as e:
