@@ -78,7 +78,7 @@ if st.button("Find Best Candidates") and job_description and uploaded_files:
         summary = generate_summary(job_description, resume_text[:2000]) if openai.api_key else "—"
 
         results.append({
-            "name": res['name'],
+            "name": file.name,
             "score": round(similarity * 100, 2),
             "summary": summary
         })
