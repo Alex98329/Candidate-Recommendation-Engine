@@ -36,6 +36,10 @@ job_description = st.text_area("Job Description", height=200)
 uploaded_files = st.file_uploader("Upload Candidate Resumes (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True)
 # Resume Text
 
+# Optional: max candidates to return
+top_k = st.slider("Showing Top Candidates", min_value=1, max_value=10, value=5)
+
+
 # --- Extract text from uploaded files ---
 def extract_text(file):
     if file.type == "application/pdf":
@@ -46,8 +50,8 @@ def extract_text(file):
         return file.read().decode("utf-8", errors="ignore")
 
 
-# Optional: max candidates to return
-top_k = st.slider("Show Top K Candidates", min_value=1, max_value=10, value=5)
+
+
 
 
 # Generate summary with OpenAI
@@ -64,6 +68,8 @@ def generate_summary(job, resume):
         return response['choices'][0]['message']['content']
     except Exception as e:
         return f"Summary not generated: {e}"
+
+
 
 # Run comparison
 # Charge the job description
@@ -87,7 +93,7 @@ if st.button("Find Best Candidates") and job_description and uploaded_files:
             "summary": summary
         })
 
-    sorted_results = sorted(results, key=lambda x: x["score"], reverse=True)
+    sorted_results = sorted(results, key=lambda x: x["score"], reverse=True)[:top_k]
 
     st.subheader("Top Matches")
     for res in sorted_results:
