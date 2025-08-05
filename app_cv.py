@@ -16,7 +16,7 @@ import os
 import tempfile
 
 # OpenAI (optional bonus feature)
-openai.api_key = st.secrets.get(api_key, os.getenv(api_key))
+openai.api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
 
 # App UI
 st.title("Candidate Recommendation Engine")
