@@ -101,3 +101,5 @@ if st.button("Find Best Candidates") and job_description and uploaded_files:
         if openai.api_key:
             with st.expander("Why this candidate?"):
                 st.markdown(res['summary'])
+elif not uploaded_files:
+    st.warning("Please upload at least one resume.")
