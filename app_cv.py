@@ -91,7 +91,7 @@ if st.button("Find Best Candidates") and job_description and uploaded_files:
         similarity = util.pytorch_cos_sim(job_embedding, resume_embedding).item()
 
         summary = generate_summary(job_description, resume_text[:2000]) if openai.api_key else "—"
-
+        candidate_name = extract_name(resume_text
         results.append({
             "file_name": file.name,
             "candidate_name": candidate_name,
