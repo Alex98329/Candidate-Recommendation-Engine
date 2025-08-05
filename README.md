@@ -42,13 +42,13 @@ A simple, interactive web app that ranks candidates based on how well their resu
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Requirements
--streamlit
--sentence-transformers
--openai 2.8
--PyPDF2
+- streamlit
+- sentence-transformers
+- openai 0.28
+- PyPDF2
 
 ### Installation
 
@@ -56,6 +56,10 @@ A simple, interactive web app that ranks candidates based on how well their resu
 pip install -r requirements.txt
 
 streamlit run app_cv.py
+
+Project Structure
 ├── app_cv.py                # Main Streamlit app
 ├── requirements.txt         # Python dependencies
 └── README.md                # This file
+
+MIT — free to use and adapt with credit.
