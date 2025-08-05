@@ -48,7 +48,7 @@ def extract_text(file):
 def generate_summary(job, resume):
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o mini",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You're a technical recruiter."},
                 {"role": "user", "content": f"Job: {job}\nResume: {resume}\nWhy is this person a good fit?"}
