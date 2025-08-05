@@ -16,7 +16,7 @@ import os
 import tempfile
 
 # OpenAI (optional bonus feature)
-#openai.api_key = st.secrets.get(api_key, os.getenv(api_key))
+openai.api_key = st.secrets.get(api_key, os.getenv(api_key))
 
 # App UI
 st.title("Candidate Recommendation Engine")
@@ -39,3 +39,45 @@ def extract_text(file):
         return "\n".join([page.extract_text() or "" for page in pdf.pages])
     else:
         return file.read().decode("utf-8", errors="ignore")
+
+
+# Generate summary with OpenAI
+def generate_summary(job, resume):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o mini",
+            messages=[
+                {"role": "system", "content": "You're a technical recruiter."},
+                {"role": "user", "content": f"Job: {job}\nResume: {resume}\nWhy is this person a good fit?"}
+            ]
+        )
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        return f"Summary not generated: {e}"
+
+# Run comparison
+if st.button("Find Best Candidates") and job_description and uploaded_files:
+    job_embedding = model.encode(job_description, convert_to_tensor=True)
+    results = []
+
+    for file in uploaded_files:
+        resume_text = extract_text(file)
+        resume_embedding = model.encode(resume_text, convert_to_tensor=True)
+        similarity = util.pytorch_cos_sim(job_embedding, resume_embedding).item()
+
+        summary = generate_summary(job_description, resume_text[:2000]) if openai.api_key else "—"
+
+        results.append({
+            "name": file.name,
+            "score": round(similarity * 100, 2),
+            "summary": summary
+        })
+
+    sorted_results = sorted(results, key=lambda x: x["score"], reverse=True)[:top_k]
+
+    st.subheader("Top Matches")
+    for res in sorted_results:
+        st.markdown(f"**{res['name']}** — Similarity: `{res['score']}%`")
+        if openai.api_key:
+            with st.expander("Why this candidate?"):
+                st.markdown(res['summary'])
