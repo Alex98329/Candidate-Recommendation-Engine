@@ -45,4 +45,17 @@ A simple, interactive web app that ranks candidates based on how well their resu
 ## 🚀 Getting Started
 
 ### Requirements
+-streamlit
+-sentence-transformers
+-openai 2.8
+-PyPDF2
 
+### Installation
+
+```bash
+pip install -r requirements.txt
+
+streamlit run app_cv.py
+├── app_cv.py                # Main Streamlit app
+├── requirements.txt         # Python dependencies
+└── README.md                # This file
