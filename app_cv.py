@@ -25,17 +25,13 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 st.title("Candidate Recommendation Engine")
 st.markdown("Upload resumes and input a job description. Get the top-matching candidates.")
 
-# --- Job Description ---
+# Job description input
 job_description = st.text_area("Job Description", height=200)
 
-# --- Resume Input Options ---
-st.markdown("###Candidate Resumes")
-
-uploaded_resume = st.file_uploader(
-    "Upload Resume(s) (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True
-)
-
-text_resume = st.text_area("Or paste a resume below:", height=200)
+# Resume file upload
+uploaded_resume = st.file_uploader("Upload Candidate Resumes (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True)
+# Resume Text
+text_resume = st.text_area("Your Text Resume", height=200)
 
 # --- Extract text from uploaded files ---
 def extract_text(file):
@@ -46,25 +42,6 @@ def extract_text(file):
     else:
         return file.read().decode("utf-8", errors="ignore")
 
-
-# Combine all resumes: uploaded + text input
-all_resumes = []
-
-# Handle uploaded files
-if uploaded_resume:
-    for file in uploaded_resume:
-        resume_text = extract_text(file)
-        all_resumes.append({
-            "name": file.name,
-            "text": resume_text
-        })
-
-# Handle text resume
-if text_resume.strip():
-    all_resumes.append({
-        "name": "TextInputResume",
-        "text": text_resume
-    })
 
 # Optional: max candidates to return
 top_k = st.slider("Show Top K Candidates", min_value=1, max_value=10, value=5)
@@ -108,9 +85,9 @@ if st.button("Find Best Candidates") and job_description and all_resumes:
 
     sorted_results = sorted(results, key=lambda x: x["score"], reverse=True)
 
-    st.subheader("🏆 Top Matches")
+    st.subheader("Top Matches")
     for res in sorted_results:
-        st.markdown(f"**👤 {res['name']}** — Similarity: `{res['score']}%`")
+        st.markdown(f"**{res['name']}** — Similarity: `{res['score']}%`")
         if openai.api_key:
-            with st.expander("🧠 Why this candidate?"):
+            with st.expander("Why this candidate?"):
                 st.markdown(res['summary'])
