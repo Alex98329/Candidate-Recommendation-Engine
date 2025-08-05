@@ -29,7 +29,7 @@ st.markdown("Upload resumes and input a job description. Get the top-matching ca
 job_description = st.text_area("Job Description", height=200)
 
 # Resume file upload
-uploaded_resume = st.file_uploader("Upload Candidate Resumes (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True)
+uploaded_files = st.file_uploader("Upload Candidate Resumes (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True)
 # Resume Text
 
 # --- Extract text from uploaded files ---
