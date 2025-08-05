@@ -49,8 +49,13 @@ def extract_text(file):
     else:
         return file.read().decode("utf-8", errors="ignore")
 
-
-
+# extract a candidate's name
+def extract_name(resume_text):
+    lines = resume_text.strip().split("\n")
+    for line in lines:
+        if line.strip():
+            return line.strip()
+    return " "
 
 
 
@@ -88,7 +93,8 @@ if st.button("Find Best Candidates") and job_description and uploaded_files:
         summary = generate_summary(job_description, resume_text[:2000]) if openai.api_key else "—"
 
         results.append({
-            "name": file.name,
+            "file_name": file.name,
+            "candidate_name": candidate_name,
             "score": round(similarity * 100, 2),
             "summary": summary
         })
@@ -97,7 +103,7 @@ if st.button("Find Best Candidates") and job_description and uploaded_files:
 
     st.subheader("Top Matches")
     for res in sorted_results:
-        st.markdown(f"**{res['name']}** — Similarity: `{res['score']}%`")
+        st.markdown(f"**{res['candidate_name']}** *(from {res['file_name']})* — Similarity: `{res['score']}%`")
         if openai.api_key:
             with st.expander("Why this candidate?"):
                 st.markdown(res['summary'])
