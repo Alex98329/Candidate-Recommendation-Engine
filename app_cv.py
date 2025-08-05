@@ -18,6 +18,9 @@ import tempfile
 # OpenAI (optional bonus feature)
 openai.api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
 
+# Load embedding model
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
 # App UI
 st.title("Candidate Recommendation Engine")
 st.markdown("Upload resumes and input a job description. Get the top-matching candidates.")
