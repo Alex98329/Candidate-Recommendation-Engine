@@ -31,7 +31,6 @@ job_description = st.text_area("Job Description", height=200)
 # Resume file upload
 uploaded_resume = st.file_uploader("Upload Candidate Resumes (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True)
 # Resume Text
-text_resume = st.text_area("Your Text Resume", height=200)
 
 # --- Extract text from uploaded files ---
 def extract_text(file):
@@ -64,13 +63,14 @@ def generate_summary(job, resume):
 
 # Run comparison
 # Charge the job description
-if st.button("Find Best Candidates") and job_description and all_resumes:
+if st.button("Find Best Candidates") and job_description and uploaded_files:
     job_embedding = model.encode(job_description, convert_to_tensor=True)
     results = []
 
     #Charge the candidate's resume
-    for res in all_resumes:
-        resume_embedding = model.encode(res['text'], convert_to_tensor=True)
+    for file in uploaded_files:
+        resume_text = extract_text(file)
+        resume_embedding = model.encode(resume_text, convert_to_tensor=True)
                 
         # perform cosine similarity with embeddings 
         similarity = util.pytorch_cos_sim(job_embedding, resume_embedding).item()
