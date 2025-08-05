@@ -50,22 +50,27 @@ def generate_summary(job, resume):
         response = openai.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You're a technical recruiter."},
+                {"role": "system", "content": "You are a technical recruiter."},
                 {"role": "user", "content": f"Job: {job}\nResume: {resume}\nWhy is this person a good fit?"}
-            ]
+            ],
+            "max_tokens": 200
         )
         return response['choices'][0]['message']['content']
     except Exception as e:
         return f"Summary not generated: {e}"
 
 # Run comparison
+# Charge the job description
 if st.button("Find Best Candidates") and job_description and uploaded_files:
     job_embedding = model.encode(job_description, convert_to_tensor=True)
     results = []
 
+    #Charge the candidate's resume
     for file in uploaded_files:
         resume_text = extract_text(file)
         resume_embedding = model.encode(resume_text, convert_to_tensor=True)
+        
+        # perform cosine similarity with embeddings 
         similarity = util.pytorch_cos_sim(job_embedding, resume_embedding).item()
 
         summary = generate_summary(job_description, resume_text[:2000]) if openai.api_key else "—"
