@@ -19,7 +19,11 @@ import tempfile
 openai.api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
 
 # Load embedding model
-model = SentenceTransformer('all-MiniLM-L6-v2')
+@st.cache_resource
+def load_model():
+    return SentenceTransformer('all-MiniLM-L6-v2')
+
+model = load_model()
 
 # App UI
 st.title("Candidate Recommendation Engine")
