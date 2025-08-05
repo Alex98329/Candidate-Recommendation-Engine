@@ -25,16 +25,19 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 st.title("Candidate Recommendation Engine")
 st.markdown("Upload resumes and input a job description. Get the top-matching candidates.")
 
-# Job description input
+# --- Job Description ---
 job_description = st.text_area("Job Description", height=200)
 
-# Resume file upload
-uploaded_files = st.file_uploader("Upload Candidate Resumes (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True)
+# --- Resume Input Options ---
+st.markdown("###Candidate Resumes")
 
-# Optional: max candidates to return
-top_k = st.slider("Show Top K Candidates", min_value=1, max_value=10, value=5)
+uploaded_resume = st.file_uploader(
+    "Upload Resume(s) (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True
+)
 
-# Helper: extract text from file
+text_resume = st.text_area("Or paste a resume below:", height=200)
+
+# --- Extract text from uploaded files ---
 def extract_text(file):
     if file.type == "application/pdf":
         from PyPDF2 import PdfReader
@@ -42,6 +45,29 @@ def extract_text(file):
         return "\n".join([page.extract_text() or "" for page in pdf.pages])
     else:
         return file.read().decode("utf-8", errors="ignore")
+
+
+# Combine all resumes: uploaded + text input
+all_resumes = []
+
+# Handle uploaded files
+if uploaded_resume:
+    for file in uploaded_resume:
+        resume_text = extract_text(file)
+        all_resumes.append({
+            "name": file.name,
+            "text": resume_text
+        })
+
+# Handle text resume
+if text_resume.strip():
+    all_resumes.append({
+        "name": "TextInputResume",
+        "text": text_resume
+    })
+
+# Optional: max candidates to return
+top_k = st.slider("Show Top K Candidates", min_value=1, max_value=10, value=5)
 
 
 # Generate summary with OpenAI
@@ -61,31 +87,30 @@ def generate_summary(job, resume):
 
 # Run comparison
 # Charge the job description
-if st.button("Find Best Candidates") and job_description and uploaded_files:
+if st.button("Find Best Candidates") and job_description and all_resumes:
     job_embedding = model.encode(job_description, convert_to_tensor=True)
     results = []
 
     #Charge the candidate's resume
-    for file in uploaded_files:
-        resume_text = extract_text(file)
-        resume_embedding = model.encode(resume_text, convert_to_tensor=True)
-        
+    for res in all_resumes:
+        resume_embedding = model.encode(res['text'], convert_to_tensor=True)
+                
         # perform cosine similarity with embeddings 
         similarity = util.pytorch_cos_sim(job_embedding, resume_embedding).item()
 
-        summary = generate_summary(job_description, resume_text[:2000]) if openai.api_key else "—"
+        summary = generate_summary(job_description, res['text'][:2000]) if openai.api_key else "—"
 
         results.append({
-            "name": file.name,
+            "name": res['name'],
             "score": round(similarity * 100, 2),
             "summary": summary
         })
 
-    sorted_results = sorted(results, key=lambda x: x["score"], reverse=True)[:top_k]
+    sorted_results = sorted(results, key=lambda x: x["score"], reverse=True)
 
-    st.subheader("Top Matches")
+    st.subheader("🏆 Top Matches")
     for res in sorted_results:
-        st.markdown(f"**{res['name']}** — Similarity: `{res['score']}%`")
+        st.markdown(f"**👤 {res['name']}** — Similarity: `{res['score']}%`")
         if openai.api_key:
-            with st.expander("Why this candidate?"):
+            with st.expander("🧠 Why this candidate?"):
                 st.markdown(res['summary'])
