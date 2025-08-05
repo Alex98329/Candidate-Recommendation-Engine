@@ -103,7 +103,7 @@ if st.button("Find Best Candidates") and job_description and uploaded_files:
 
     st.subheader("Top Matches")
     for res in sorted_results:
-        st.markdown(f"**{res['candidate_name']}**   *({res['file_name']})*   — Similarity: `{res['score']}%`")
+        st.markdown(f"**{res['candidate_name']}** — Similarity: `{res['score']}%`  *({res['file_name']})*   ")
         if openai.api_key:
             with st.expander("Why this candidate?"):
                 st.markdown(res['summary'])
