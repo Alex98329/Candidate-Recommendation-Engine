@@ -45,7 +45,7 @@ A simple, interactive web app that ranks candidates based on how well their resu
 ## Getting Started
 
 ### Requirements
-- streamlit
+- [streamlit](https://candidate-recommendation-engine-cz6zmrhuqn6ckxn7vwzoj9.streamlit.app/)
 - sentence-transformers
 - openai 0.28
 - PyPDF2
