@@ -27,7 +27,7 @@ model = load_model()
 
 # App UI
 st.title("Candidate Recommendation Engine")
-st.markdown("Upload resumes and input a job description. Get the top-matching candidates.")
+st.markdown("Input a job description and upload resumes. Get the top-matching candidates.")
 
 # Job description input
 job_description = st.text_area("Job Description", height=200)
@@ -36,7 +36,7 @@ job_description = st.text_area("Job Description", height=200)
 uploaded_files = st.file_uploader("Upload Candidate Resumes (TXT or PDF)", type=["txt", "pdf"], accept_multiple_files=True)
 # Resume Text
 
-# Optional: max candidates to return
+# Max candidates to return
 top_k = st.slider("Showing Top Candidates", min_value=1, max_value=10, value=5)
 
 
@@ -82,12 +82,12 @@ if st.button("Find Best Candidates") and job_description and uploaded_files:
     job_embedding = model.encode(job_description, convert_to_tensor=True)
     results = []
 
-    #Charge the candidate's resume
+    # Charge the candidate's resume
     for file in uploaded_files:
         resume_text = extract_text(file)
         resume_embedding = model.encode(resume_text, convert_to_tensor=True)
                 
-        # perform cosine similarity with embeddings 
+        # Perform cosine similarity with embeddings 
         similarity = util.pytorch_cos_sim(job_embedding, resume_embedding).item()
 
         summary = generate_summary(job_description, resume_text[:2000]) if openai.api_key else "—"
